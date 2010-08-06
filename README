@@ -1,0 +1,85 @@
+NAME
+    Alien::Packages - Find information of installed packages
+
+SYNOPSIS
+        my $ap = Alien::Packages->new();
+
+        my @packages = $ap->list_packages();
+        foreach my $pkg (@packages)
+        {
+            print "$pkg->[0] version $pkg->[1]: $pkg->[2]\n";
+        }
+
+        my %perl_owners = $ap->list_fileowners( File::Spec->rel2abs( $^X ) );
+        while( my ($fn, $pkg) = each( %perl_owners ) )
+        {
+            print "$fn is provided by ", join( ", ", @$pkg ), "\n";
+        }
+
+SUBROUTINES/METHODS
+  new
+    Instantiates new Alien::Packages object. Attributes can be specified for
+    used finder (of type Module::Pluggable::Object). Additionally,
+
+    `only_loaded'
+        Use only plugins which are still loaded.
+
+    can be specified with a true value. This forces to grep `%INC' instead
+    of using Module::Pluggable.
+
+  list_packages
+    Lists the installed packages on the system (if the caller has the
+    permission to do).
+
+    Results in a list of array references, whereby each item contains:
+
+      [ type, name, version, summary ]
+
+    `type' is the packager type, e.g. *rpm*, *lpp* or *pkgsrc*.
+
+  list_fileowners
+    Provides an association between files on the system and the package
+    which reference it (has presumably installed it).
+
+    Returns a hash with the files names as key and a list of referencing
+    package names as value.
+
+AUTHOR
+    Jens Rehsack, `<rehsack at cpan.org>'
+
+BUGS
+    Please report any bugs or feature requests to `bug-alien-packages at
+    rt.cpan.org', or through the web interface at
+    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Alien-Packages. I will be
+    notified, and then you'll automatically be notified of progress on your
+    bug as I make changes.
+
+SUPPORT
+    You can find documentation for this module with the perldoc command.
+
+        perldoc Alien::Packages
+
+    You can also look for information at:
+
+    * RT: CPAN's request tracker
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Alien-Packages
+
+    * AnnoCPAN: Annotated CPAN documentation
+        http://annocpan.org/dist/Alien-Packages
+
+    * CPAN Ratings
+        http://cpanratings.perl.org/d/Alien-Packages
+
+    * Search CPAN
+        http://search.cpan.org/dist/Alien-Packages/
+
+ACKNOWLEDGEMENTS
+LICENSE AND COPYRIGHT
+    Copyright 2010 Jens Rehsack.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of either: the GNU General Public License as published
+    by the Free Software Foundation; or the Artistic License.
+
+    See http://dev.perl.org/licenses/ for more information.
+
