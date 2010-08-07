@@ -179,7 +179,37 @@ sub list_fileowners
 
 Jens Rehsack, C<< <rehsack at cpan.org> >>
 
+=head1 GETTING HELP
+
+To get novice help, it's usually recommended to ask on typical platforms
+like PerlMonks.  To help you make the best use of the PerlMonks platform,
+and any other lists or forums you may use, I strongly recommend that you
+read "How To Ask Questions The Smart Way" by Eric Raymond:
+L<http://www.catb.org/~esr/faqs/smart-questions.html>.
+
+If you really asks a question what noone can answer, please drop me a
+note with the question URL to either my CPAN address or on C<irc.perl.org>
+in the channels C<#toolchain> or C<#devops>. I'll try to answer as best
+as I can (and as soon, as possible, of course).
+
+=head2 Where can I go for help with a concrete version?
+
+Bugs and feature requests are accepted against the latest version only.
+To get patches for earlier versions, you need to get an agreement with a
+developer of your choice - who may or not report the issue and a suggested
+fix upstream (depends on the license you have chosen).
+
+=head2 Business support and maintenance
+
+For business support you can contact Jens via his CPAN email address
+rehsackATcpan.org. Please keep in mind that business support is neither
+available for free nor are you eligible to receive any support based on
+the license distributed with this package.
+
 =head1 BUGS
+
+This module is alpha software, the API may change in future releases.
+See L<Alien::Packages::Roadmap> for more details.
 
 Please report any bugs or feature requests to
 C<bug-alien-packages at rt.cpan.org>, or through the web interface at
@@ -214,6 +244,10 @@ L<http://cpanratings.perl.org/d/Alien-Packages>
 L<http://search.cpan.org/dist/Alien-Packages/>
 
 =back
+
+If you think you've found a bug then please also read "How to Report Bugs
+Effectively" by Simon Tatham:
+L<http://www.chiark.greenend.org.uk/~sgtatham/bugs.html>.
 
 =head1 ACKNOWLEDGEMENTS
 
