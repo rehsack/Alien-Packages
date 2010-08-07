@@ -41,11 +41,13 @@ sub usable
     unless ( defined($pkginfo) )
     {
         $pkginfo = IPC::Cmd::can_run('pkginfo');
+	$pkginfo ||= '';
     }
 
     unless ( defined($pkgchk) )
     {
         $pkgchk = IPC::Cmd::can_run('pkgchk');
+	$pkgchk ||= '';
     }
 
     return $pkginfo && $pkgchk;

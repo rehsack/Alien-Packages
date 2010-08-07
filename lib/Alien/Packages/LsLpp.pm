@@ -40,6 +40,7 @@ sub usable
     unless ( defined($lslpp) )
     {
         $lslpp = IPC::Cmd::can_run('lslpp');
+	$lslpp ||= '';
     }
 
     return $lslpp;

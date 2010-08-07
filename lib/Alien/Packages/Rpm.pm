@@ -50,6 +50,7 @@ sub usable
         else
         {
             $rpm = IPC::Cmd::can_run('rpm');
+	    $rpm ||= '';
         }
     }
 
