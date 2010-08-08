@@ -249,6 +249,16 @@ If you think you've found a bug then please also read "How to Report Bugs
 Effectively" by Simon Tatham:
 L<http://www.chiark.greenend.org.uk/~sgtatham/bugs.html>.
 
+=head1 RESOURCES AND CONTRIBUTIONS
+
+There're several ways how you can help to support future development: You can
+hire the author to implement the features you require at most (this also
+defines priorities), you can negotiate a support and maintenance contract
+with the company of the author and you can provide tests and patches. Further,
+you can submit documentation and links to resources to improve or add
+packaging systems or grant remote access to machines with insufficient
+supported packaging tools.
+
 =head1 ACKNOWLEDGEMENTS
 
 
