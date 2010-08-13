@@ -69,7 +69,8 @@ sub list_packages
     my @packages;
 
     my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-      IPC::Cmd::run( command => [ $lslpp, '-lc' ],
+      $self->_run_ipc_cmd(
+      command => [ $lslpp, '-lc' ],
                      verbose => 0, );
 
     if ($success)
@@ -81,7 +82,9 @@ sub list_packages
             next if ( $pkg =~ m/^#/ );
             my @pkg_details = split( ':', $pkg );
             next if ( scalar @pkg_details < 7 );
-            push( @packages, [ @pkg_details[ 1, 2 ], $pkg_details[6] ] );
+	    my %pkg_details;
+	    @pkg_details{'Package','Version','Summary'} = (@pkg_details[ 1, 2 ], $pkg_details[6]);
+            push( @packages, \%pkg_details );
         }
     }
 
@@ -102,8 +105,9 @@ sub list_fileowners
     foreach my $file (@files)
     {
         my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-          IPC::Cmd::run( command => [ $lslpp, '-wc', $file ],
-                         verbose => 0, );
+      $self->_run_ipc_cmd(
+	      command => [ $lslpp, '-wc', $file ],
+	      verbose => 0, );
 
         if ($success)
         {
@@ -114,7 +118,7 @@ sub list_fileowners
                 next if ( $line =~ m/^#/ );
                 my @info = split( ":", $line );
                 next if ( scalar @info < 3 );    # nonsense line
-                $file_owners{$file} = [ $info[1] ];
+                push( @{$file_owners{$file}}, { Package => $info[1] } );
             }
         }
     }

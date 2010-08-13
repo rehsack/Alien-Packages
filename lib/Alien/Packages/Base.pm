@@ -13,6 +13,7 @@ Alien::Packages::Base - base class for package backends
 $VERSION = "0.001";
 
 use Carp qw(croak);
+require IPC::Run;
 
 =head1 SUBROUTINES/METHODS
 
@@ -21,6 +22,15 @@ use Carp qw(croak);
 Instantiates new object, no attributes evaluated.
 
 =cut
+
+sub _run_ipc_cmd
+{
+    $_[0]->isa('Alien::Packages::Base') and shift;
+    my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) = IPC::Cmd::run(@_);
+    $stdout_buf = [ join( "", @$stdout_buf ) ];
+    $stderr_buf = [ join( "", @$stderr_buf ) ];
+    return ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf );
+}
 
 sub new
 {
@@ -45,11 +55,24 @@ sub pkgtype
 
 =head2 list_packages
 
-Returns a list of list containing installed packages.
+Returns a list of hashes containing installed packages.
 Each item must contain:
-  [ name, version, summary ]
+
+  { Package => $pkg_name, Version => $version, Summary => $summary ]
 
 =head2 list_fileowners
+
+Returns a hash of lists containing the packages which are registered
+file owners for the specified files. Each list must contain at least
+one item:
+
+  '/absolute/path/to/file' =>
+      [
+	  {
+	      Package => $pkg_name,
+	  }
+      ],
+  ...
 
 =cut
 

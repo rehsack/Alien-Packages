@@ -49,7 +49,7 @@ sub usable
         };
         if ($@)
         {
-            @pkg_info = ( IPC::Cmd::can_run('pkg_info') );
+            @pkg_info = grep {$_} ( IPC::Cmd::can_run('pkg_info') );
         }
 
         foreach my $piexe (@pkg_info)
@@ -79,7 +79,8 @@ sub list_packages
     my @packages;
 
     my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-      IPC::Cmd::run( command => [$pkg_info],
+      $self->_run_ipc_cmd(
+      command => [$pkg_info],
                      verbose => 0, );
 
     if ($success)
@@ -90,7 +91,7 @@ sub list_packages
             my @pkg_details = split( ' ', $pkg, 2 );
             if ( $pkg_details[0] =~ m/^(.*)-([^-]*)$/ )
             {
-                push( @packages, [ $1, $2, $pkg_details[1] ] );
+                push( @packages, { Package => $1, Version => $2, Summary => $pkg_details[1] } );
             }
         }
     }
@@ -112,7 +113,8 @@ sub list_fileowners
     foreach my $file (@files)
     {
         my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-          IPC::Cmd::run( command => [ $pkg_info, '-Fe', $file ],
+      $self->_run_ipc_cmd(
+	  command => [ $pkg_info, '-Fe', $file ],
                          verbose => 0, );
 
         if ($success)
@@ -120,7 +122,7 @@ sub list_fileowners
             chomp $stdout_buf->[0];
             if ( $stdout_buf->[0] =~ m/^(.*)-([^-]*)$/ )
             {
-                $file_owners{$file} = [$1];
+                push( @{$file_owners{$file}}, { Package => [$1] } );
             }
         }
     }

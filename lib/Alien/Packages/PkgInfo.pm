@@ -65,14 +65,18 @@ sub list_packages
     my @packages;
 
     my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-      IPC::Cmd::run( command => [ $pkginfo, '-x' ],
+      $self->_run_ipc_cmd(
+      command => [ $pkginfo, '-x' ],
                      verbose => 0, );
 
     if ($success)
     {
         while ( $stdout_buf->[0] =~ m/(\w+)\s+([^\s].*)\s+(\(\w+\))\s(\d[\d.]+,REV=[^\s]+)/gx )
         {
-            push( @packages, [ $1, $4, $2 ] );
+            push( @packages, {
+		Package => $1,
+		Version => $4,
+		Summary => $2, } );
         }
     }
 
@@ -93,7 +97,7 @@ sub list_fileowners
     foreach my $file (@files)
     {
         my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-          IPC::Cmd::run(
+      $self->_run_ipc_cmd(
                          command     => [ $pkgchk, '-i', '-', '-l' ],
                          verbose     => 0,
                          child_stdin => "$file\n",
@@ -103,8 +107,7 @@ sub list_fileowners
         {
             while ( $stdout_buf->[0] =~ m/Referenced\sby\sthe\sfollowing\spackages:\s+([A-Za-z0-9]+)/x )
             {
-                $file_owners{$file} ||= [];
-                push( @{ $file_owners{$file} }, $1 );
+                push( @{ $file_owners{$file} }, {Packages => $1} );
             }
         }
     }

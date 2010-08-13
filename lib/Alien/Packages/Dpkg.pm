@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 
 =head1 NAME
 
-Alien::Packages::Dpkg - handles packages of Debian's dpkg
+Alien::Packages::Rpm - get's information from RedHat Package Manager CLI
 
 =cut
 
@@ -18,26 +18,48 @@ require Alien::Packages::Base;
 
 =head1 ISA
 
-    Alien::Packages::Dpkg
+    Alien::Packages::Rpm
     ISA Alien::Packages::Base
+
+=cut
+
+require IPC::Cmd;
+
+my $dpkg_query;
 
 =head1 SUBROUTINES/METHODS
 
 =head2 usable
 
+Returns true when the rpm database access is not available (when
+L<RPM::Database> is not available) and the C<rpm> command could be
+found in the path.
+
 =cut
 
 sub usable
 {
-    unless ( defined( $INC{'DPKG/Parse.pm'} ) )
+    unless ( defined($dpkg_query) )
     {
-        eval { require DPKG::Parse; };
+        local $@;
+        eval { require Alien::Packages::RpmDB; };
+        if ( !$@ && Alien::Packages::RpmDB->usable() )
+        {
+            $dpkg_query = '';
+        }
+        else
+        {
+            $dpkg_query = IPC::Cmd::can_run('dpkg-query');
+	    $dpkg_query ||= '';
+        }
     }
 
-    return $INC{'DPKG/Parse.pm'};
+    return $dpkg_query;
 }
 
 =head2 list_packages
+
+Returns the list of installed I<rpm> packages.
 
 =cut
 
@@ -46,10 +68,38 @@ sub list_packages
     my $self = $_[0];
     my @packages;
 
+    my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
+      $self->_run_ipc_cmd(
+        command => [ $dpkg_query, '-W', q(-f=${Package}:${Version}:${Description}\n) ],
+        verbose => 0, );
+
+    if ($success)
+    {
+	chomp $stdout_buf->[0];
+        my @pkglist = split( /\n/, $stdout_buf->[0] );
+	my %pkg_details;
+        foreach my $pkg (@pkglist)
+        {
+            if( 0 == index( $pkg, ' ' ) )
+	    {
+		push( @{$pkg_details{Description}}, $pkg );
+	    }
+	    else
+	    {
+		%pkg_details and push( @packages, { %pkg_details } );
+		@pkg_details{'Package','Version','Summary'} = split( ':', $pkg );
+		$pkg_details{Description} = [];
+	    }
+        }
+	%pkg_details and push( @packages, { %pkg_details } );
+    }
+
     return @packages;
 }
 
 =head2 list_fileowners
+
+Returns the I<rpm> packages which are associated to requested file(s).
 
 =cut
 
@@ -57,6 +107,27 @@ sub list_fileowners
 {
     my ( $self, @files ) = @_;
     my %file_owners;
+
+    foreach my $file (@files)
+    {
+        my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
+	  $self->_run_ipc_cmd(
+                       command => [ $dpkg_query, '-S', $file ],
+                       verbose => 0, );
+
+        if ($success)
+        {
+	    chomp $stdout_buf->[0];
+	    my @pkglist = split( /\n/, $stdout_buf->[0] );
+	    foreach my $pkg (@pkglist)
+	    {
+		if( my ( $pkg_name, $fn ) = $pkg =~ m/^([^:]+):\s+([^\s].*)$/ )
+		{
+		    push( @{$file_owners{$fn}}, { Package => $pkg_name } );
+		}
+	    }
+        }
+    }
 
     return %file_owners;
 }

@@ -101,7 +101,12 @@ permission to do).
 
 Results in a list of array references, whereby each item contains:
 
-  [ type, name, version, summary ]
+  {
+      PkgType => $pkg_type, # e.g. 'dpkg', 'pkgsrc', ...
+      Package => $pkg_name,
+      Version => $version,
+      Summary => $summary,
+  }
 
 C<type> is the packager type, e.g. I<rpm>, I<lpp> or I<pkgsrc>.
 
@@ -118,7 +123,8 @@ sub list_packages
 	my $pkgtype = $plugin->pkgtype();
 	foreach my $pkg (@ppkgs)
 	{
-	    push( @packages, [ $pkgtype, @$pkg ] );
+	    $pkg->{PkgType} = $pkgtype;
+	    push( @packages, $pkg );
 	}
     }
 
@@ -131,44 +137,43 @@ Provides an association between files on the system and the package which
 reference it (has presumably installed it).
 
 Returns a hash with the files names as key and a list of referencing
-package names as value.
+package names as value:
+
+  '/absolute/path/to/file' =>
+      [
+	  {
+	      PkgType => $pkg_type,
+	      Package => $pkg_name,
+	  }
+      ],
+  ...
 
 =cut
-
-my $haveHashMerge;
 
 sub list_fileowners
 {
     my ( $self, @files ) = @_;
     my %file_owners;
 
-    unless ( defined($haveHashMerge) )
-    {
-        $haveHashMerge = 0;
-        eval { require Hash::Merge; Hash::Merge->VERSION() ge "0.12" and $haveHashMerge = 1; };
-        $haveHashMerge and $self->{hashmerge} = Hash::Merge->new('LEFT_PRECEDENT');
-    }
-
     foreach my $plugin ( @{ $self->{plugins} } )
     {
+	my $pkgtype = $plugin->pkgtype();
         my %pfos = $plugin->list_fileowners(@files);
-        if ( $self->{hashmerge} )
-        {
-            %file_owners = %{ $self->{hashmerge}->merge( \%file_owners, \%pfos ) };
-        }
-        else
-        {
-            while ( my ( $fn, $pkg ) = each %pfos )
-            {
-                if ( defined( $file_owners{$fn} ) )
-                {
-                    push( @{ $file_owners{$fn} }, @{$pkg} );
-                }
-                else
-                {
-                    $file_owners{$fn} = $pkg;
-                }
-            }
+	while ( my ( $fn, $pkgs ) = each %pfos )
+	{
+	    foreach my $pkg (@$pkgs)
+	    {
+		$pkg->{PkgType} = $pkgtype;
+	    }
+
+	    if ( defined( $file_owners{$fn} ) )
+	    {
+		push( @{ $file_owners{$fn} }, @{$pkgs} );
+	    }
+	    else
+	    {
+		$file_owners{$fn} = $pkgs;
+	    }
         }
     }
 

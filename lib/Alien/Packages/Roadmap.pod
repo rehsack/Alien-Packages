@@ -21,10 +21,13 @@ Where feasible, additional information like installed patches (e.g. AIX),
 package vulnerabilities (pkgsrc), installation dates, package origin etc.,
 can and should be provided.
 
-=head2 Better API
+=head2 Speed Improvement
 
-The interface of the getters should change from an array list to a list
-of hashes with appropriate keys for each package.
+When querying packages of several files, for each file the query is
+separately executed. That means, invoking the package tool for querying
+each file, because most query tools exit with an error code when at
+least one queried file isn't managed by this package management. Speeding
+up querying multiple files needs a way to "ignore" safe errors.
 
 =head1 RESOURCES AND CONTRIBUTIONS
 

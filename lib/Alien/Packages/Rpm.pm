@@ -69,8 +69,8 @@ sub list_packages
     my @packages;
 
     my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-      IPC::Cmd::run(
-        command => [ $rpm, '-qa', '--queryformat', '"%{NAME}:%{VERSION}-%{RELEASE}:%{SUMMARY}\n"' ],
+      $self->_run_ipc_cmd(
+        command => [ $rpm, '-qa', '--queryformat', '"%{NAME}:%{VERSION}:%{RELEASE}:%{SUMMARY}\n"' ],
         verbose => 0, );
 
     if ($success)
@@ -80,8 +80,12 @@ sub list_packages
         {
             next if ( $pkg =~ m/^#/ );
             my @pkg_details = split( ':', $pkg );
-            next if ( scalar @pkg_details < 3 );
-            push( @packages, [@pkg_details] );
+            push( @packages, {
+		Package => $pkg_details[0],
+		Version => $pkg_details[1],
+		Release => $pkg_details[2],
+		Summary => $pkg_details[3],
+	    });
         }
     }
 
@@ -101,14 +105,15 @@ sub list_fileowners
 
     foreach my $file (@files)
     {
-        my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) = IPC::Cmd::run(
+        my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
+      $self->_run_ipc_cmd(
                        command => [ $rpm, '-qf', $file ],    # XXX received with or without versions
                        verbose => 0, );
 
         if ($success)
         {
             chomp $stdout_buf->[0];
-            $file_owners{$file} = [$stdout_buf->[0]];
+            push( @{$file_owners{$file}}, { Package => $stdout_buf->[0] } );
         }
     }
 
