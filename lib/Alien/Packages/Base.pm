@@ -13,7 +13,7 @@ Alien::Packages::Base - base class for package backends
 $VERSION = "0.001";
 
 use Carp qw(croak);
-require IPC::Run;
+require IPC::Cmd;
 
 =head1 SUBROUTINES/METHODS
 
