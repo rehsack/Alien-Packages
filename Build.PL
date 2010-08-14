@@ -17,7 +17,6 @@ my $builder = Module::Build->new(
     },
     recommends          => {
 	'IPC::Run'    => 0,
-	'Hash::Merge' => '0.12',
     },
     create_readme       => 1,
     add_to_cleanup      => [ 'Alien-Packages-*' ],
