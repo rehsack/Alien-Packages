@@ -17,6 +17,7 @@ my $builder = Module::Build->new(
     },
     recommends          => {
 	'IPC::Run'    => 0,
+        ( $^O eq 'MSWin32' ? ( 'Win32::Registry' => 0, ) : () ),
     },
     create_readme       => 1,
     add_to_cleanup      => [ 'Alien-Packages-*' ],
