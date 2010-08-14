@@ -44,7 +44,6 @@ provides:
     file: lib/Alien/Packages/RpmDB.pm
     version: 0.001
 recommends:
-  Hash::Merge: 0.12
   IPC::Run: 0
 requires:
   IPC::Cmd: 0

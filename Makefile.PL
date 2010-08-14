@@ -2,16 +2,16 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
+          'PL_FILES' => {},
+          'INSTALLDIRS' => 'site',
           'NAME' => 'Alien::Packages',
+          'EXE_FILES' => [],
           'VERSION_FROM' => 'lib/Alien/Packages.pm',
           'PREREQ_PM' => {
-                           'IPC::Cmd' => 0,
-                           'IPC::Open3' => 0,
+                           'Test::More' => '0.90',
                            'Module::Pluggable' => '3.9',
-                           'Test::More' => '0.90'
-                         },
-          'INSTALLDIRS' => 'site',
-          'EXE_FILES' => [],
-          'PL_FILES' => {}
+                           'IPC::Cmd' => 0,
+                           'IPC::Open3' => 0
+                         }
         )
 ;
