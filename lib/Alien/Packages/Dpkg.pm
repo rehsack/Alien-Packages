@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 
 =head1 NAME
 
-Alien::Packages::Rpm - get's information from RedHat Package Manager CLI
+Alien::Packages::Dpkg - get's information from Debian's package database via dpkg-query
 
 =cut
 
@@ -31,9 +31,7 @@ my $dpkg_query;
 
 =head2 usable
 
-Returns true when the rpm database access is not available (when
-L<RPM::Database> is not available) and the C<rpm> command could be
-found in the path.
+Returns true when the C<dpkg-query> command could be found in the path.
 
 =cut
 
@@ -41,17 +39,8 @@ sub usable
 {
     unless ( defined($dpkg_query) )
     {
-        local $@;
-        eval { require Alien::Packages::RpmDB; };
-        if ( !$@ && Alien::Packages::RpmDB->usable() )
-        {
-            $dpkg_query = '';
-        }
-        else
-        {
-            $dpkg_query = IPC::Cmd::can_run('dpkg-query');
-	    $dpkg_query ||= '';
-        }
+	$dpkg_query = IPC::Cmd::can_run('dpkg-query');
+	$dpkg_query ||= '';
     }
 
     return $dpkg_query;
@@ -59,7 +48,7 @@ sub usable
 
 =head2 list_packages
 
-Returns the list of installed I<rpm> packages.
+Returns the list of installed I<dpkg> packages.
 
 =cut
 
@@ -99,7 +88,7 @@ sub list_packages
 
 =head2 list_fileowners
 
-Returns the I<rpm> packages which are associated to requested file(s).
+Returns the I<dpkg> packages which are associated to requested file(s).
 
 =cut
 
