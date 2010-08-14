@@ -122,7 +122,7 @@ sub list_fileowners
             chomp $stdout_buf->[0];
             if ( $stdout_buf->[0] =~ m/^(.*)-([^-]*)$/ )
             {
-                push( @{$file_owners{$file}}, { Package => [$1] } );
+                push( @{$file_owners{$file}}, { Package => $1 } );
             }
         }
     }
