@@ -29,19 +29,24 @@ Returns true when Win32::TieRegistry is available and can connect to C<HKLM>.
 
 =cut
 
-my ($haveWin32TieRegistry, $win32TieRegistry);
+my ( $haveWin32TieRegistry, $win32TieRegistry );
 
 sub usable
 {
-    unless( defined( $win32TieRegistry ) )
+    unless ( defined($win32TieRegistry) )
     {
         $haveWin32TieRegistry = 0;
         eval {
             require Win32::TieRegistry;
             $win32TieRegistry = $Win32::TieRegistry::Registry->Clone();
-            $win32TieRegistry->Delimiter( "/" );
-            my $machKey= $win32TieRegistry->Open( "LMachine", {Access=>Win32::TieRegistry::KEY_READ(),Delimiter=>"/"} )
-              or  die "Can't open HKEY_LOCAL_MACHINE key: $^E\n";
+            $win32TieRegistry->Delimiter("/");
+            my $machKey = $win32TieRegistry->Open(
+                                                   "LMachine",
+                                                   {
+                                                     Access    => Win32::TieRegistry::KEY_READ(),
+                                                     Delimiter => "/"
+                                                   }
+                                                 ) or die "Can't open HKEY_LOCAL_MACHINE key: $^E\n";
             $haveWin32TieRegistry = 1;
         };
     }
@@ -63,20 +68,26 @@ sub list_packages
     my $self = $_[0];
     my @packages;
 
-    my $machKey= $win32TieRegistry->Open( "LMachine", {Access=>Win32::TieRegistry::KEY_READ(),Delimiter=>"/"} )
-      or  die "Can't open HKEY_LOCAL_MACHINE key: $^E\n";
-    my $regInstallRoot = $machKey->Open( "SOFTWARE/Microsoft/Windows/CurrentVersion/Installer/UserData" );
-    foreach my $user (keys %$regInstallRoot)
+    my $machKey = $win32TieRegistry->Open(
+                                           "LMachine",
+                                           {
+                                              Access    => Win32::TieRegistry::KEY_READ(),
+                                              Delimiter => "/"
+                                           }
+                                         ) or die "Can't open HKEY_LOCAL_MACHINE key: $^E\n";
+    my $regInstallRoot =
+      $machKey->Open("SOFTWARE/Microsoft/Windows/CurrentVersion/Installer/UserData");
+    foreach my $user ( keys %$regInstallRoot )
     {
         my $userProdKey = $regInstallRoot->Open( $user . "Products" );
-        foreach my $product (keys %$userProdKey)
+        foreach my $product ( keys %$userProdKey )
         {
             my $instPropKey = $userProdKey->Open( $product . "InstallProperties" );
             my %pkginfo = (
-                Package => $product,
-                Description => $instPropKey->{DisplayName},
-                Version => $instPropKey->{DisplayVersion},
-            );
+                            Package     => $product,
+                            Description => $instPropKey->{DisplayName},
+                            Version     => $instPropKey->{DisplayVersion},
+                          );
             $pkginfo{Package} =~ s|/$||;
             push( @packages, \%pkginfo );
         }

@@ -114,7 +114,7 @@ sub list_fileowners
         if ($rpm_header)
         {
             my @nvr = $rpm_header->NVR();
-            push( @{$file_owners{$file}}, { Package => $nvr[0] } );
+            push( @{ $file_owners{$file} }, { Package => $nvr[0] } );
         }
     }
 

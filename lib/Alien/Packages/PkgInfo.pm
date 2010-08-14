@@ -42,13 +42,13 @@ sub usable
     unless ( defined($pkginfo) )
     {
         $pkginfo = IPC::Cmd::can_run('pkginfo');
-	$pkginfo ||= '';
+        $pkginfo ||= '';
     }
 
     unless ( defined($pkgchk) )
     {
         $pkgchk = IPC::Cmd::can_run('pkgchk');
-	$pkgchk ||= '';
+        $pkgchk ||= '';
     }
 
     return $pkginfo && $pkgchk;
@@ -66,18 +66,21 @@ sub list_packages
     my @packages;
 
     my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-      $self->_run_ipc_cmd(
-      command => [ $pkginfo, '-x' ],
-                     verbose => 0, );
+      $self->_run_ipc_cmd( command => [ $pkginfo, '-x' ],
+                           verbose => 0, );
 
     if ($success)
     {
         while ( $stdout_buf->[0] =~ m/(\w+)\s+([^\s].*)\s+(\(\w+\))\s(\d[\d.]+,REV=[^\s]+)/gx )
         {
-            push( @packages, {
-		Package => $1,
-		Version => $4,
-		Summary => $2, } );
+            push(
+                  @packages,
+                  {
+                     Package => $1,
+                     Version => $4,
+                     Summary => $2,
+                  }
+                );
         }
     }
 
@@ -95,27 +98,28 @@ sub list_fileowners
     my ( $self, @files ) = @_;
     my %file_owners;
 
-    my $tmpfile = File::Spec->catfile( File::Spec->tmpdir(), join( "_", qw(alias pkg list fileowner), $$ ) );
+    my $tmpfile =
+      File::Spec->catfile( File::Spec->tmpdir(), join( "_", qw(alias pkg list fileowner), $$ ) );
 
     foreach my $file (@files)
     {
         my $fh;
         open( $fh, ">", $tmpfile ) or die "Can't open $tmpfile: $!";
         print $fh "$file\n";
-        close( $fh ) or die "Can't close $tmpfile: $!";
+        close($fh) or die "Can't close $tmpfile: $!";
 
         # that seems to fail on OpenSolaris - Solaris 10u8 on sparc64 succeeds
-        my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) = 
-          $self->_run_ipc_cmd(
-                             command     => [ $pkgchk, '-i', $tmpfile, '-l' ],
-                             verbose     => 0,
-                           );
+        my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
+          $self->_run_ipc_cmd( command => [ $pkgchk, '-i', $tmpfile, '-l' ],
+                               verbose => 0, );
 
         if ($success)
         {
-            while ( $stdout_buf->[0] =~ m/Pathname:\s*(.*?)\n.*Referenced\sby\sthe\sfollowing\spackages:\s+([A-Za-z0-9]+)/xsg )
+            while ( $stdout_buf->[0] =~
+                m/Pathname:\s*(.*?)\n.*Referenced\sby\sthe\sfollowing\spackages:\s+([A-Za-z0-9]+)/xsg
+              )
             {
-                push( @{ $file_owners{$1} }, {Package => $2} );
+                push( @{ $file_owners{$1} }, { Package => $2 } );
             }
         }
     }

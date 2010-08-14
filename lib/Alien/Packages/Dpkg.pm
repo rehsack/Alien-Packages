@@ -39,8 +39,8 @@ sub usable
 {
     unless ( defined($dpkg_query) )
     {
-	$dpkg_query = IPC::Cmd::can_run('dpkg-query');
-	$dpkg_query ||= '';
+        $dpkg_query = IPC::Cmd::can_run('dpkg-query');
+        $dpkg_query ||= '';
     }
 
     return $dpkg_query;
@@ -59,28 +59,28 @@ sub list_packages
 
     my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
       $self->_run_ipc_cmd(
-        command => [ $dpkg_query, '-W', q(-f=${Package}:${Version}:${Description}\n) ],
-        verbose => 0, );
+                     command => [ $dpkg_query, '-W', q(-f=${Package}:${Version}:${Description}\n) ],
+                     verbose => 0, );
 
     if ($success)
     {
-	chomp $stdout_buf->[0];
+        chomp $stdout_buf->[0];
         my @pkglist = split( /\n/, $stdout_buf->[0] );
-	my %pkg_details;
+        my %pkg_details;
         foreach my $pkg (@pkglist)
         {
-            if( 0 == index( $pkg, ' ' ) )
-	    {
-		push( @{$pkg_details{Description}}, $pkg );
-	    }
-	    else
-	    {
-		%pkg_details and push( @packages, { %pkg_details } );
-		@pkg_details{'Package','Version','Summary'} = split( ':', $pkg );
-		$pkg_details{Description} = [];
-	    }
+            if ( 0 == index( $pkg, ' ' ) )
+            {
+                push( @{ $pkg_details{Description} }, $pkg );
+            }
+            else
+            {
+                %pkg_details and push( @packages, {%pkg_details} );
+                @pkg_details{ 'Package', 'Version', 'Summary' } = split( ':', $pkg );
+                $pkg_details{Description} = [];
+            }
         }
-	%pkg_details and push( @packages, { %pkg_details } );
+        %pkg_details and push( @packages, {%pkg_details} );
     }
 
     return @packages;
@@ -100,21 +100,20 @@ sub list_fileowners
     foreach my $file (@files)
     {
         my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-	  $self->_run_ipc_cmd(
-                       command => [ $dpkg_query, '-S', $file ],
-                       verbose => 0, );
+          $self->_run_ipc_cmd( command => [ $dpkg_query, '-S', $file ],
+                               verbose => 0, );
 
         if ($success)
         {
-	    chomp $stdout_buf->[0];
-	    my @pkglist = split( /\n/, $stdout_buf->[0] );
-	    foreach my $pkg (@pkglist)
-	    {
-		if( my ( $pkg_name, $fn ) = $pkg =~ m/^([^:]+):\s+([^\s].*)$/ )
-		{
-		    push( @{$file_owners{$fn}}, { Package => $pkg_name } );
-		}
-	    }
+            chomp $stdout_buf->[0];
+            my @pkglist = split( /\n/, $stdout_buf->[0] );
+            foreach my $pkg (@pkglist)
+            {
+                if ( my ( $pkg_name, $fn ) = $pkg =~ m/^([^:]+):\s+([^\s].*)$/ )
+                {
+                    push( @{ $file_owners{$fn} }, { Package => $pkg_name } );
+                }
+            }
         }
     }
 

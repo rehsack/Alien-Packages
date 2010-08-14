@@ -119,13 +119,13 @@ sub list_packages
 
     foreach my $plugin ( @{ $self->{plugins} } )
     {
-        my @ppkgs = $plugin->list_packages();
-	my $pkgtype = $plugin->pkgtype();
-	foreach my $pkg (@ppkgs)
-	{
-	    $pkg->{PkgType} = $pkgtype;
-	    push( @packages, $pkg );
-	}
+        my @ppkgs   = $plugin->list_packages();
+        my $pkgtype = $plugin->pkgtype();
+        foreach my $pkg (@ppkgs)
+        {
+            $pkg->{PkgType} = $pkgtype;
+            push( @packages, $pkg );
+        }
     }
 
     return @packages;
@@ -157,23 +157,23 @@ sub list_fileowners
 
     foreach my $plugin ( @{ $self->{plugins} } )
     {
-	my $pkgtype = $plugin->pkgtype();
-        my %pfos = $plugin->list_fileowners(@files);
-	while ( my ( $fn, $pkgs ) = each %pfos )
-	{
-	    foreach my $pkg (@$pkgs)
-	    {
-		$pkg->{PkgType} = $pkgtype;
-	    }
+        my $pkgtype = $plugin->pkgtype();
+        my %pfos    = $plugin->list_fileowners(@files);
+        while ( my ( $fn, $pkgs ) = each %pfos )
+        {
+            foreach my $pkg (@$pkgs)
+            {
+                $pkg->{PkgType} = $pkgtype;
+            }
 
-	    if ( defined( $file_owners{$fn} ) )
-	    {
-		push( @{ $file_owners{$fn} }, @{$pkgs} );
-	    }
-	    else
-	    {
-		$file_owners{$fn} = $pkgs;
-	    }
+            if ( defined( $file_owners{$fn} ) )
+            {
+                push( @{ $file_owners{$fn} }, @{$pkgs} );
+            }
+            else
+            {
+                $file_owners{$fn} = $pkgs;
+            }
         }
     }
 

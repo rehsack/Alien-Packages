@@ -40,7 +40,7 @@ sub usable
     unless ( defined($lslpp) )
     {
         $lslpp = IPC::Cmd::can_run('lslpp');
-	$lslpp ||= '';
+        $lslpp ||= '';
     }
 
     return $lslpp;
@@ -69,21 +69,21 @@ sub list_packages
     my @packages;
 
     my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-      $self->_run_ipc_cmd(
-      command => [ $lslpp, '-lc' ],
-                     verbose => 0, );
+      $self->_run_ipc_cmd( command => [ $lslpp, '-lc' ],
+                           verbose => 0, );
 
     if ($success)
     {
-	chomp $stdout_buf->[0];
+        chomp $stdout_buf->[0];
         my @pkglist = split( /\n/, $stdout_buf->[0] );
         foreach my $pkg (@pkglist)
         {
             next if ( $pkg =~ m/^#/ );
             my @pkg_details = split( ':', $pkg );
             next if ( scalar @pkg_details < 7 );
-	    my %pkg_details;
-	    @pkg_details{'Package','Version','Summary'} = (@pkg_details[ 1, 2 ], $pkg_details[6]);
+            my %pkg_details;
+            @pkg_details{ 'Package', 'Version', 'Summary' } =
+              ( @pkg_details[ 1, 2 ], $pkg_details[6] );
             push( @packages, \%pkg_details );
         }
     }
@@ -105,9 +105,8 @@ sub list_fileowners
     foreach my $file (@files)
     {
         my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-      $self->_run_ipc_cmd(
-	      command => [ $lslpp, '-wc', $file ],
-	      verbose => 0, );
+          $self->_run_ipc_cmd( command => [ $lslpp, '-wc', $file ],
+                               verbose => 0, );
 
         if ($success)
         {
@@ -118,7 +117,7 @@ sub list_fileowners
                 next if ( $line =~ m/^#/ );
                 my @info = split( ":", $line );
                 next if ( scalar @info < 3 );    # nonsense line
-                push( @{$file_owners{$file}}, { Package => $info[1] } );
+                push( @{ $file_owners{$file} }, { Package => $info[1] } );
             }
         }
     }

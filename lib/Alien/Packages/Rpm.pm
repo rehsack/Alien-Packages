@@ -50,7 +50,7 @@ sub usable
         else
         {
             $rpm = IPC::Cmd::can_run('rpm');
-	    $rpm ||= '';
+            $rpm ||= '';
         }
     }
 
@@ -80,12 +80,15 @@ sub list_packages
         {
             next if ( $pkg =~ m/^#/ );
             my @pkg_details = split( ':', $pkg );
-            push( @packages, {
-		Package => $pkg_details[0],
-		Version => $pkg_details[1],
-		Release => $pkg_details[2],
-		Summary => $pkg_details[3],
-	    });
+            push(
+                  @packages,
+                  {
+                     Package => $pkg_details[0],
+                     Version => $pkg_details[1],
+                     Release => $pkg_details[2],
+                     Summary => $pkg_details[3],
+                  }
+                );
         }
     }
 
@@ -105,15 +108,14 @@ sub list_fileowners
 
     foreach my $file (@files)
     {
-        my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-      $self->_run_ipc_cmd(
+        my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) = $self->_run_ipc_cmd(
                        command => [ $rpm, '-qf', $file ],    # XXX received with or without versions
                        verbose => 0, );
 
         if ($success)
         {
             chomp $stdout_buf->[0];
-            push( @{$file_owners{$file}}, { Package => $stdout_buf->[0] } );
+            push( @{ $file_owners{$file} }, { Package => $stdout_buf->[0] } );
         }
     }
 
