@@ -23,6 +23,7 @@ require Alien::Packages::Base;
 
 =cut
 
+require File::Spec;
 require IPC::Cmd;
 
 =head1 SUBROUTINES/METHODS
@@ -94,23 +95,32 @@ sub list_fileowners
     my ( $self, @files ) = @_;
     my %file_owners;
 
+    my $tmpfile = File::Spec->catfile( File::Spec->tmpdir(), join( "_", qw(alias pkg list fileowner), $$ ) );
+
     foreach my $file (@files)
     {
-        my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
-      $self->_run_ipc_cmd(
-                         command     => [ $pkgchk, '-i', '-', '-l' ],
-                         verbose     => 0,
-                         child_stdin => "$file\n",
-                       );
+        my $fh;
+        open( $fh, ">", $tmpfile ) or die "Can't open $tmpfile: $!";
+        print $fh "$file\n";
+        close( $fh ) or die "Can't close $tmpfile: $!";
+
+        # that seems to fail on OpenSolaris - Solaris 10u8 on sparc64 succeeds
+        my ( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) = 
+          $self->_run_ipc_cmd(
+                             command     => [ $pkgchk, '-i', $tmpfile, '-l' ],
+                             verbose     => 0,
+                           );
 
         if ($success)
         {
-            while ( $stdout_buf->[0] =~ m/Referenced\sby\sthe\sfollowing\spackages:\s+([A-Za-z0-9]+)/x )
+            while ( $stdout_buf->[0] =~ m/Pathname:\s*(.*?)\n.*Referenced\sby\sthe\sfollowing\spackages:\s+([A-Za-z0-9]+)/xsg )
             {
-                push( @{ $file_owners{$file} }, {Packages => $1} );
+                push( @{ $file_owners{$1} }, {Package => $2} );
             }
         }
     }
+
+    unlink $tmpfile;
 
     return %file_owners;
 }
