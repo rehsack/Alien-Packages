@@ -25,14 +25,36 @@ require Alien::Packages::Base;
 
 =head2 usable
 
+Returns true when Win32::TieRegistry is available and can connect to C<HKLM>.
+
 =cut
+
+my ($haveWin32TieRegistry, $win32TieRegistry);
 
 sub usable
 {
-    return 0;
+    unless( defined( $win32TieRegistry ) )
+    {
+        $haveWin32TieRegistry = 0;
+        eval {
+            require Win32::TieRegistry;
+            $win32TieRegistry = $Win32::TieRegistry::Registry->Clone();
+            $win32TieRegistry->Delimiter( "/" );
+            my $machKey= $win32TieRegistry->Open( "LMachine", {Access=>Win32::TieRegistry::KEY_READ(),Delimiter=>"/"} )
+              or  die "Can't open HKEY_LOCAL_MACHINE key: $^E\n";
+            $haveWin32TieRegistry = 1;
+        };
+    }
+
+    return $haveWin32TieRegistry;
 }
 
 =head2 list_packages
+
+Scans the packages below
+C<HKLM/SOFTWARE/Microsoft/Windows/CurrentVersion/Installer/UserData/*/Products/*/InstallProperties>
+and returns the values of DisplayName and DisplayVersion for each key
+below C<*/Products/*/>.
 
 =cut
 
@@ -41,10 +63,32 @@ sub list_packages
     my $self = $_[0];
     my @packages;
 
+    my $machKey= $win32TieRegistry->Open( "LMachine", {Access=>Win32::TieRegistry::KEY_READ(),Delimiter=>"/"} )
+      or  die "Can't open HKEY_LOCAL_MACHINE key: $^E\n";
+    my $regInstallRoot = $machKey->Open( "SOFTWARE/Microsoft/Windows/CurrentVersion/Installer/UserData" );
+    foreach my $user (keys %$regInstallRoot)
+    {
+        my $userProdKey = $regInstallRoot->Open( $user . "Products" );
+        foreach my $product (keys %$userProdKey)
+        {
+            my $instPropKey = $userProdKey->Open( $product . "InstallProperties" );
+            my %pkginfo = (
+                Package => $product,
+                Description => $instPropKey->{DisplayName},
+                Version => $instPropKey->{DisplayVersion},
+            );
+            $pkginfo{Package} =~ s|/$||;
+            push( @packages, \%pkginfo );
+        }
+    }
+
     return @packages;
 }
 
 =head2 list_fileowners
+
+Returns an empty hash - MSI doesn't register installed files by MSI
+packages (or better: I do not know where it stores this information).
 
 =cut
 
