@@ -1,3 +1,4 @@
+\B\.git\b
 \B\.svn\b
 \.[Bb][Aa][Kk]$
 \.orig$
@@ -29,3 +30,6 @@ _Inline/.*
 ^MYMETA.yml$
 ^\..*
 Alien-Packages-.*
+\bxt
+^MYMETA\.json$
+^MYMETA\..*$
