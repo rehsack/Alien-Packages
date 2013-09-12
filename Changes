@@ -1,5 +1,8 @@
 Revision history for Alien-Packages
 
-0.01    Date/time
-        First version, released on an unsuspecting world.
+0.002 2013-09-12
+ - move to github
+ - move author tests to xt/
 
+0.000_001 - 2010-08-14
+ - First version, released on an unsuspecting world.
