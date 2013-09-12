@@ -11,9 +11,9 @@ lib/Alien/Packages/PkgInfo.pm
 lib/Alien/Packages/Roadmap.pod
 lib/Alien/Packages/Rpm.pm
 lib/Alien/Packages/RpmDB.pm
-Makefile.PL
 MANIFEST
 MANIFEST.SKIP
+META.json
 META.yml
 README
 t/00-load.t
