@@ -13,15 +13,18 @@ my $builder = Module::Build->new(
     requires            => {
 	'IPC::Open3'        => 0,
 	'IPC::Cmd'          => 0,
-	'Module::Pluggable' => '3.9',
+	'Module::Pluggable' => '4.5',
     },
     recommends          => {
 	'IPC::Run'    => 0,
+	'Module::Pluggable' => '4.8',
         ( $^O eq 'MSWin32' ? ( 'Win32::Registry' => 0, ) : () ),
     },
     create_readme       => 1,
+    meta_merge =>
+	{ resources => { repository => "https://github.com/rehsack/Alien-Packages", }, },
+    test_files => join( ' ' => 't/*.t xt/*.t' ),
     add_to_cleanup      => [ 'Alien-Packages-*' ],
-    create_makefile_pl  => 'traditional',
 );
 
 $builder->create_build_script();
