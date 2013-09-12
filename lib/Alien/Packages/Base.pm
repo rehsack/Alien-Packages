@@ -10,7 +10,7 @@ Alien::Packages::Base - base class for package backends
 
 =cut
 
-$VERSION = "0.001";
+$VERSION = "0.002";
 
 use Carp qw(croak);
 require IPC::Cmd;

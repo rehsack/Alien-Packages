@@ -10,7 +10,7 @@ Alien::Packages::Rpm - get's information from RedHat Package Manager CLI
 
 =cut
 
-$VERSION = "0.001";
+$VERSION = "0.002";
 
 require Alien::Packages::Base;
 

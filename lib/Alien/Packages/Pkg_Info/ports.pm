@@ -10,7 +10,7 @@ Alien::Packages::Pkg_Info::ports - deals with FreeBSD's Ports
 
 =cut
 
-$VERSION = "0.001";
+$VERSION = "0.002";
 
 require Alien::Packages::Base;
 

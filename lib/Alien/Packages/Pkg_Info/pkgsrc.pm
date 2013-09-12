@@ -10,7 +10,7 @@ Alien::Packages::Pkg_Info::pkgsrc - get's information from NetBSD's portable pkg
 
 =cut
 
-$VERSION = "0.001";
+$VERSION = "0.002";
 
 require Alien::Packages::Base;
 
