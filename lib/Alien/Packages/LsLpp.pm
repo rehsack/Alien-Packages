@@ -10,7 +10,7 @@ Alien::Packages::LsLpp - handles AIX lslpp packaging system
 
 =cut
 
-$VERSION = "0.002";
+$VERSION = "0.003";
 
 require Alien::Packages::Base;
 

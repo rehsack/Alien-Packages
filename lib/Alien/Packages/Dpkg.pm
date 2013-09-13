@@ -10,7 +10,7 @@ Alien::Packages::Dpkg - get's information from Debian's package database via dpk
 
 =cut
 
-$VERSION = "0.002";
+$VERSION = "0.003";
 
 require Alien::Packages::Base;
 
