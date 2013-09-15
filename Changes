@@ -1,5 +1,11 @@
 Revision history for Perl distribution Alien-Packages
 
+0.004 2013-09-15
+    - Reformatted Changes file as per CPAN::Changes::Spec (thanks to
+      Neil Bowers)
+    - add author test (not distributed) to prove Changes against
+      CPAN::Changes::Spec
+
 0.003 2013-09-14
     - split on , for debian packages to handle multiple packages owning the
       same file/dir (thanks to Graham Ollis <perl@wdlabs.com>)
