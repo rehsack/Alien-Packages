@@ -10,7 +10,7 @@ Alien::Packages::RpmDB - acesses the RPM database directly
 
 =cut
 
-$VERSION = "0.003";
+$VERSION = "0.004";
 
 require Alien::Packages::Base;
 use Carp qw(croak);

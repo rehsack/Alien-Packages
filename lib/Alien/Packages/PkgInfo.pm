@@ -10,7 +10,7 @@ Alien::Packages::PkgInfo - handles Sun's pkginfo
 
 =cut
 
-$VERSION = "0.003";
+$VERSION = "0.004";
 
 require Alien::Packages::Base;
 
