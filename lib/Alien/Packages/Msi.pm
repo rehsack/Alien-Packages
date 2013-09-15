@@ -10,7 +10,7 @@ Alien::Packages::Msi - deals with package information of Microsoft Installer
 
 =cut
 
-$VERSION = "0.004";
+$VERSION = "0.005";
 
 require Alien::Packages::Base;
 
