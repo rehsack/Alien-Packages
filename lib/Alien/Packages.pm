@@ -21,13 +21,16 @@ our $VERSION = '0.005';
     my @packages = $ap->list_packages();
     foreach my $pkg (@packages)
     {
-	print "$pkg->[0] version $pkg->[1]: $pkg->[2]\n";
+	print "$pkg->{PkgType} version $pkg->{Package}: $pkg->{Version}\n";
     }
 
     my %perl_owners = $ap->list_fileowners( File::Spec->rel2abs( $^X ) );
     while( my ($fn, $pkg) = each( %perl_owners ) )
     {
-	print "$fn is provided by ", join( ", ", @$pkg ), "\n";
+        foreach my $item (@$pkg)
+        {
+	    print "$fn is provided by $item->{Package} $item->{PkgType} package\n";
+        }
     }
 
 =head1 SUBROUTINES/METHODS
